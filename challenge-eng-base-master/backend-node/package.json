@@ -1,7 +1,13 @@
 {
     "dependencies": {
+        "bcrypt-nodejs": "0.0.3",
+        "body-parser": "^1.18.2",
         "express": "^4.15.3",
-        "body-parser": "^1.17.2",
-        "mysql": "^2.13.0"
+        "mysql": "^2.13.0",
+        "mysql2": "^1.5.3",
+        "node-gyp": "^3.6.2",
+        "sequelize": "^4.37.6",
+        "sequelize-cli": "^4.0.0",
+        "umzug": "^2.1.0"
     }
 }

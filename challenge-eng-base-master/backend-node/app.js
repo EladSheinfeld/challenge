@@ -1,34 +1,34 @@
 const express = require('express');
-const mysql = require('mysql');
+const bodyParser = require('body-parser');
+const UserRepository = require('./repositories/UserRepository');
 
 const app = express();
-const db = mysql.createPool({
-    host: 'db',
-    user: 'root',
-    password: 'testpass',
-    database: 'challenge',
-});
+app.use(bodyParser.urlencoded());
+
+app.use(bodyParser.json());
 
 app.get('/test', function (req, res) {
-    db.getConnection(function (err, connection) {
-        if (err) {
-            res.status(501).send(err.message);
-            return;
-        }
-        connection.query('SELECT col FROM test', function (err, results, fields) {
-            if (err) {
-                res.status(501).send(err.message);
-                connection.release();
-                return;
-            }
+  res.json({
+      status: 'alive'
+  });
+});
 
-            res.json({
-                result: results[0].col,
-                backend: 'nodejs',
-            });
-            connection.release();
-        });
+app.post('/user', function(req,res){
+  UserRepository.exists(req.body.email).then(exists => {
+    if(exists) {
+      res.status(409).send("Email already exists in the system.");
+      return res;
+    }
+    UserRepository.add(req.body.email, req.body.password)
+    .then(user => {
+      return res.json(JSON.stringify(user));
+    }).catch(errors =>  {
+      if(errors)
+        res.status(400).send(errors);
     });
+  });
+
+
 });
 
 app.listen(8000, function() {

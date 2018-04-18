@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "testpass",
+    "database": "challenge",
+    "host": "db",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "testpass",
+    "database": "challenge",
+    "host": "db",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "testpass",
+    "database": "challenge",
+    "host": "db",
+    "dialect": "mysql"
+  }
+}
