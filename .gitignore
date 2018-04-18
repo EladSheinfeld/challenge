@@ -1,2 +1,3 @@
 .DS_Store
-./challenge-eng-base-master/backend-node/node_modules/node_modules
+.jshintrc
+challenge-eng-base-master/backend-node/node_modules
