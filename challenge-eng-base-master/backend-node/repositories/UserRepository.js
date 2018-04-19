@@ -15,12 +15,21 @@ class UserRepository {
   }
 
   exists(email) {
+    return this.getUser(email).then(user => {
+      return user !== null;
+    });
+  }
+
+  getUser(email) {
     return models.User.findOne({
       where: {
         email: email
       }
-    }).then(user => {
-      return user !== null;
+    }).then( user => {
+      if(!user)
+        return null;
+
+      return new User(user.email);
     });
   }
 }
