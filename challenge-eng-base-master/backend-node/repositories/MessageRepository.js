@@ -5,43 +5,51 @@ var Message = require('../domain/entities/Message');
 class MessageRepository {
   add(from, recipients, content) {
     return models.Message.build({
-      from: from.email,
-      recipients: recipients.map(x => x.email),
+      from: from,
       content: content
-    }).save().then(message => {
-      return new Message(message.from,
-                        message.recipients.split('_'),
+    })
+    .setRecipients(recipients)
+    .then(msg => {
+      return msg.save()
+      .then(message => {
+        return new Message(message.from,
+                        message.recipients,
                         message.content,
                         message.createdAt);
+      })
+      .catch(errors => {
+        throw new Error(errors.errors[0].message);
+      });
     });
   }
 
   fetch(from, recipients, page, limit) {
-    return models.Message.findAll({
-      where: {
-        from: from
-      }
-    });
-
-    /*return models.Message.build({
-      from: from.email,
-      recipients: recipients.map(x => x.email),
+    return models.Message.build({
+      from: from
     })
-    .generateHash()
-    .then(hash => {
+    .setRecipients(recipients)
+    .then(msg => {
       return models.Message.findAndCountAll({
         where: {
-          hash: hash
+          hash: msg.hash
         },
         offset: page * limit,
         limit: limit
       }).then(result => {
-        console.error(result.count);
-        console.error(result.rows);
+        return {
+          messages: result.rows.map(x => new Message(
+            x.from,
+            x.getRecipients(),
+            x.content,
+            x.sentTime
+          )),
+          total: result.count
+        };
       }).catch(errors => {
         throw new Error(errors.errors[0].message);
       });
-    });*/
+    });
+
   }
 }
 

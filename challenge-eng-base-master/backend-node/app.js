@@ -98,7 +98,38 @@ router.route('/messages/:from/:recipients')
       .then(messages => {
         return res.json(JSON.stringify(messages));
       });
-  });
+  })
+  .post([
+    hasValidEmail(check('from', 'Must provide a valid email'), true),
+    oneOf([
+      hasValidEmail(check('recipients', 'Must provide a valid email'), true),
+      check('recipients')
+        .isArray()
+    ]),
+    body('content').exists()
+  ],
+    function(req,res) {
+      var errors = validationResult(req);
+      if(!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.mapped() });
+      }
+      if(!(req.params.recipients instanceof Array)){
+        req.params.recipients = [req.params.recipients];
+      }
+
+      MessageRepository.add(req.params.from,
+                            req.params.recipients,
+                            req.body.content)
+                      .then(msg => {
+                          console.error("Recived this:");
+                          console.error(JSON.stringify(msg));
+                          return res.json(JSON.stringify(msg));
+                        })
+                      .catch(errors =>  {
+                        if(errors)
+                          res.status(400).send(errors);
+                        });
+    });
 
 app.listen(8000, function() {
     console.log('Listening on port 8000');
